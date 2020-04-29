@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>BFC</title>
+  </head>
+  <body>
+    <div>
+      <h3>1. 清除浮动</h3>
+      <div style="border: 1px solid #427af8;overflow: hidden">
+        <div style="width: 100px;height: 100px;background: #eee;float: left;"></div>
+      </div>
+      <div style="width:200px; height:200px;background: #e95;"></div>
+      <p>我是段段段段段段段段段段段段段段段段段段段段段段段段段段段段段落</p>
+    </div>
+    <div>
+      <h3>2. 避免某元素被浮动元素覆盖</h3>
+      <div style="width: 100px;height: 100px;background: #eee;float: left;">左浮元素</div>
+      <div style="width:200px; height:200px;background: #e95;">
+        我是一段被霸占家产的文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文字
+      </div>
+      <div style="margin-top: 100px;"></div>
+      <div style="width: 100px;height: 100px;background: #eee;float: left;">左浮元素</div>
+      <div style="width:200px; height:200px;background: #e95;overflow: hidden;">
+        我是一段请完律师并划分财产之后的的文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文文字
+      </div>
+    </div>
+    <div>
+      <h3>3. 阻止外边距重叠</h3>
+      <div style="width: 100px;height: 100px;background: #eee;margin-bottom: 100px;">我有一个向下的100px外边距</div>
+      <div style="width:100px; height:100px;background: #e95;margin-top:100px;">我有一个向上的100px外边距</div>
+      <div style="margin-top: 100px;"></div>
+      <div style="overflow: hidden;">
+        <div style="width: 100px;height: 100px;background: #eee;margin-bottom: 100px;overflow: hidden;">
+          我有一个向下的100px外边距和一个触发BFC的爸爸
+        </div>
+      </div>
+      <div style="overflow: hidden;">
+        <div style="width:100px; height:100px;background: #e95;margin-top:100px;overflow: hidden;">
+          我有一个向上的100px外边距和一个触发BFC的爸爸
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
