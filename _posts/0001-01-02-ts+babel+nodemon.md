@@ -1,1 +1,0 @@
-@babel/preset-typescript 只是把ts删除了，转换成了js
