@@ -1,0 +1,112 @@
+---
+title: 用生成器实现一个async
+date: 2020-06-21
+categories:
+  - JavaScript
+tags:
+  - JavaScript
+---
+
+## 什么是迭代器（Iterator）
+
+- 可以被`next()`函数调用并不断返回下一个值的对象称为迭代器：`Iterator`
+
+迭代器`Iterator` 是 `ES6` 引入的一种新的遍历机制，同时也是一种特殊对象，它具有一些专门为迭代过程设计的专有接口。
+
+每个迭代器对象都有一个`next()`方法，每次调用都返回一个当前结果对象。当前结果对象中有两个属性：
+
+1. `value`：当前属性的值
+
+2. `done`：用于判断是否遍历结束，当没有更多可返回的数据时，返回`true`
+
+每调用一次`next()`方法，都会返回下一个可用的值，直到遍历结束。
+
+我们来创建一个迭代器：
+
+```js
+function createIterator(items) {
+  var i = 0
+  return {
+    next: function () {
+      var done = i >= items.length
+      var value = !done ? items[i++] : undefined
+      return {
+        // next()方法返回结果对象
+        value: value,
+        done: done,
+      }
+    },
+  }
+}
+
+var iterator = createIterator([1, 2, 3])
+
+console.log(iterator.next()) // "{ value: 1, done: false}"
+console.log(iterator.next()) // "{ value: 2, done: false}"
+console.log(iterator.next()) // "{ value: 3, done: false}"
+console.log(iterator.next()) // "{ value: undefiend, done: true}"
+// 之后所有的调用都会返回相同内容
+console.log(iterator.next()) // "{ value: undefiend, done: true}"
+```
+
+## 什么是生成器（Generator）
+
+- 生成器是一种返回迭代器的函数，通过`function`关键字后的星号`(*)`来表示，函数中会用到新的关键字`yield`。星号可以紧挨着`function`关键字，也可以在中间添加一个空格.
+
+```js
+function* generator() {
+  const list = [1, 2, 3]
+  for (let i of list) {
+    yield i
+  }
+}
+let g = generator()
+
+console.log(g.next()) // {value: 1, done: false}
+console.log(g.next()) // {value: 2, done: false}
+console.log(g.next()) // {value: 3, done: false}
+console.log(g.next()) // {value: undefined, done: true}
+```
+
+### 特性
+
+1. 每当执行完一条`yield`语句后函数就会自动停止执行, 直到再次调用`next()`;
+2. `yield`关键字只可在生成器内部使用，在其他地方使用会导致程序抛出错误;
+3. 可以通过函数表达式来创建生成器, 但是不能使用箭头函数
+   `let generator = function *(){}`
+
+## 用生成器模拟一个 async
+
+其实就是将生成器自执行。
+
+```js
+function waitFn(delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(delay)
+    }, delay)
+  })
+}
+
+function asyncFunc(generator) {
+  let iterator = generator()
+  const next = (data) => {
+    const { value, done } = iterator.next(data)
+    if (done) return
+    value.then((res) => {
+      next(res)
+    })
+  }
+  next()
+}
+
+asyncFunc(function* () {
+  const a = yield waitFn(1000)
+  console.log(a)
+  const b = yield waitFn(1500)
+  console.log(b)
+})
+
+// 1000
+// 1500
+```
